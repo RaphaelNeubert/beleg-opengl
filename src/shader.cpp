@@ -31,9 +31,9 @@ Shader::Shader(const char* pathVertexShader, const char* pathFragmentShader)
     }
     const char* vCode=vSource.c_str();
     const char* fCode=fSource.c_str();
-    unsigned int vertex, fragment;
+    GLuint fragment;
     // compile vertex shader
-    vertex=glCreateShader(GL_VERTEX_SHADER);
+    GLuint vertex=glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vCode, NULL);
     glCompileShader(vertex);
     checkCompileErrors(vertex, "vertex");
@@ -65,8 +65,8 @@ void Shader::checkCompileErrors(unsigned int shader, const char* type)
     if (!success) {
         char clog[1024];
         glGetShaderInfoLog(shader, 1024, NULL, clog);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR type:"<<type << "\n" << clog
-                  << std::endl;
+        std::cerr << "ERROR::SHADER_COMPILATION_ERROR type:"<<type << "\n"
+                  << clog << std::endl;
         }
 }
 
@@ -80,4 +80,8 @@ glGetProgramiv(program, GL_LINK_STATUS, &success);
         std::cerr << "ERROR::SHADER_LINKING_ERROR " << "\n" << clog
                   << std::endl;
     }
+}
+void Shader::uniformMat4(const std::string& name, const glm::mat4& value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(id,name.c_str()), 1,GL_FALSE, &value[0][0]);
 }

@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include <glew.h>
+#include <glm.hpp>
 
 #include <string>
 #include <fstream>
@@ -15,6 +16,7 @@ class Shader
 
         Shader(const char* pathVertexShader, const char* pathFragmentShader);
         void activate();
+        void uniformMat4(const std::string& name, const glm::mat4& value);
     private:
         void checkCompileErrors(unsigned int shader, const char* type);
         void checkLinkErrors(unsigned int program);

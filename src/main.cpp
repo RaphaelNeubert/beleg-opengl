@@ -3,59 +3,33 @@
 #include <glut.h>
 #include <freeglut.h>
 #include <glm.hpp>
+#include <gtx/transform.hpp>
 
+#include "common.hpp"
 #include "shader.hpp"
-
-#define W_WIDTH 1920
-#define W_HEIGHT 1080
+#include "objects.hpp"
+#include "callback.hpp"
 
 // program wide states
 GLuint program; 
-enum VAO_IDs {VAOBasic,NumVAOs};
-enum VBO_IDs {VBOCube, VBOCone, NumVBOs};
-enum EBO_IDs {EBOCube,NumEBOs};
-enum Attrib_IDs {vPosition, vColor, vTexture, vElement};
-enum Texture_IDs {texRectangle, NumTextures};
 GLuint VAOs[NumVAOs];
 GLuint VBOs[NumVBOs];
 GLuint Textures[NumTextures];
 GLuint EBOs[NumEBOs];
 
-void generateCube()
-{
-    GLfloat vertices[]={
-        0.0f, 0.0f, 0.0f,
-        0.2f, 0.0f, 0.0f,
-        0.1f, 0.2f, 0.0f,
-        0.2f, 0.2f, 0.0f
-    };
-    GLuint indices[]={
-        0,1,2,
-        1,2,3
-    };
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
-    glBindVertexArray(VAOs[VAOBasic]);
-    glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
-    glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
-    glEnableVertexAttribArray(vPosition);
-}
-void drawCube()
-{
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
-    glBindVertexArray(VAOs[VAOBasic]);
-    glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);
-}
+Shader *shader;
+Camera camera(glm::vec3(0.0f,0.0f,3.0f),glm::vec3(0.0f,0.0f,-1.0f));
+GLfloat lastX=WIN_W/2.0;
+GLfloat lastY=WIN_H/2.0;
+bool firstMouseCall=true; 
 
-void reshape(int w, int h)
-{
-}
+GLfloat deltaTime=0.0f;
+GLfloat lastFrame=0.0f;
+
 void init()
 {
-    Shader shader("src/shader.vs","src/shader.fs");
-    shader.activate();
+    shader = new Shader("src/shader.vs","src/shader.fs");
+    shader->activate();
 
     glClearColor(0.0f,0.3f,0.3f,1.0f);
 
@@ -67,19 +41,42 @@ void init()
 }
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLfloat currentFrame=glutGet(GLUT_ELAPSED_TIME);
+    deltaTime=currentFrame-lastFrame;
+    lastFrame=currentFrame;
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glm::mat4 Projection=glm::mat4(1.0);
+    glm::mat4 Model=glm::mat4(1.0);
+    Projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
+
+    glm::mat4 view=camera.getViewMatrix();
+    shader->uniformMat4("view",view);
+
+    shader->uniformMat4("projection",Projection);
+    shader->uniformMat4("model",Model);
+    
     glVertexAttrib4f(vColor, 1.0f, 0.0f, 0.0f, 1.0f);
     drawCube();
 
     glutSwapBuffers();
 }
 
+void timer(int value)
+{
+    display();
+	glutTimerFunc(1000/144.0f, timer, 0);
+}
+void cleanup()
+{
+    delete shader;
+}
+
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(W_WIDTH,W_HEIGHT);
+	glutInitWindowSize(WIN_W,WIN_H);
 	glutInitContextVersion(4,5);  // (4,2) (3,3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	 //GLUT_COMPATIBILITY_PROFILE
@@ -92,6 +89,10 @@ int main(int argc, char** argv)
 	init();
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+    glutSetCursor(GLUT_CURSOR_NONE);
+    glutPassiveMotionFunc(passivemouse);
+    timer(0);
 	glutMainLoop();
 }
 

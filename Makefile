@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall 
+CXXFLAGS=-Wall -g
 LDFLAGS=-lGL -lglut -lGLEW -I/usr/include/glm/ -I/usr/include/GL
 
 ODIR = obj
@@ -12,7 +12,7 @@ OBJ = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC))
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(LDFLAGS)
 
-beleg: $(OBJ)
+main: $(OBJ)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 clean:

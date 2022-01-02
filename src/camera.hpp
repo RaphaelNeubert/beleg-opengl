@@ -1,0 +1,29 @@
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
+#include <glm.hpp>
+#include <glew.h>
+
+enum Direction{FORWARDS,BACKWARDS,LEFT,RIGHT};
+
+class Camera
+{
+    private:
+        glm::vec3 pos;
+        glm::vec3 front;
+        glm::vec3 up;
+        glm::vec3 right;
+
+        float yaw;
+        float pitch;
+        //options
+        float speed;
+        float sens;
+
+    public:
+        Camera(glm::vec3 pos, glm::vec3 front);
+        glm::mat4 getViewMatrix();
+        void mouseMovement(int xoffset, int yoffset);
+        void keyInput(Direction dir, float deltaTime);
+};
+
+#endif
