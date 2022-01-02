@@ -14,9 +14,9 @@ class Shader
         unsigned int id;
 
         Shader(const char* pathVertexShader, const char* pathFragmentShader);
-        void activateShader();
+        void activate();
     private:
-        void checkCompileErrors(unsigned int shader);
+        void checkCompileErrors(unsigned int shader, const char* type);
         void checkLinkErrors(unsigned int program);
 
 };

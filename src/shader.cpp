@@ -36,12 +36,12 @@ Shader::Shader(const char* pathVertexShader, const char* pathFragmentShader)
     vertex=glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vCode, NULL);
     glCompileShader(vertex);
-    checkCompileErrors(vertex);
+    checkCompileErrors(vertex, "vertex");
     // compile fragment Shader
     fragment=glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fCode, NULL);
     glCompileShader(fragment);
-    checkCompileErrors(fragment);
+    checkCompileErrors(fragment, "fragment");
     // link shaders
     id=glCreateProgram();
     glAttachShader(id, vertex);
@@ -53,19 +53,19 @@ Shader::Shader(const char* pathVertexShader, const char* pathFragmentShader)
     glDeleteShader(fragment);
 }
 
-void Shader::activateShader()
+void Shader::activate()
 {
     glUseProgram(id);
 }
 
-void Shader::checkCompileErrors(unsigned int shader)
+void Shader::checkCompileErrors(unsigned int shader, const char* type)
 {
     int success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
         char clog[1024];
         glGetShaderInfoLog(shader, 1024, NULL, clog);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR " << "\n" << clog
+        std::cerr << "ERROR::SHADER_COMPILATION_ERROR type:"<<type << "\n" << clog
                   << std::endl;
         }
 }
