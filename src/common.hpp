@@ -8,10 +8,10 @@
 #define WIN_H 1080
 
 extern GLuint program; 
-enum VAO_IDs {VAOBasic,NumVAOs};
+enum VAO_IDs {VAOCube, VAOCone, NumVAOs};
 enum VBO_IDs {VBOCube, VBOCone, NumVBOs};
-enum EBO_IDs {EBOCube,NumEBOs};
-enum Attrib_IDs {vPosition, vColor, vTexture, vElement};
+enum EBO_IDs {EBOCube, EBOCone, NumEBOs};
+enum Attrib_IDs {vPosition, vColor, vTexture};
 enum Texture_IDs {texRectangle, NumTextures};
 extern GLuint VAOs[NumVAOs];
 extern GLuint VBOs[NumVBOs];

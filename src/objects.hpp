@@ -4,6 +4,11 @@
 
 void generateCube();
 void drawCube();
+void drawOuterCube();
+
+void generateCone();
+void drawCone();
+void drawOuterCone();
 
 #endif
 

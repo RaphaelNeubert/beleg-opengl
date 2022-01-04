@@ -37,7 +37,10 @@ void init()
     glGenBuffers(NumVBOs,VBOs);
     //glGenTextures(NumTextures,Textures);
     glGenBuffers(NumEBOs,EBOs);
+
+    glEnable(GL_CULL_FACE);
     generateCube();
+    generateCone();
 }
 void display()
 {
@@ -57,7 +60,10 @@ void display()
     shader->uniformMat4("model",Model);
     
     glVertexAttrib4f(vColor, 1.0f, 0.0f, 0.0f, 1.0f);
-    drawCube();
+    //drawCube();
+    drawOuterCube();
+    //drawCone();
+    drawOuterCone();
 
     glutSwapBuffers();
 }
