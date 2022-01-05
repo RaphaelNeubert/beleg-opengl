@@ -5,6 +5,7 @@
 
 void generateCube()
 {
+    /*
     GLfloat vertices[]={
         //front
         -0.5f, -0.5f, 0.5f,
@@ -22,9 +23,9 @@ void generateCube()
         0,1,2,  1,3,2,
         //back
         4,5,6,  5,7,6,
-        //left
-        1,4,3,  4,6,3,
         //right
+        1,4,3,  4,6,3,
+        //left
         5,0,7,  0,2,7,
         //up
         2,3,7,  3,6,7,
@@ -32,22 +33,70 @@ void generateCube()
         5,1,0,  5,4,1
 
     };
+    */
+    GLfloat vertices[]={
+        //front
+        -0.5f,-0.5f,0.5f,  0.5f, -0.5f, 0.5f,
+        -0.5f,0.5f,0.5f,   0.5f, 0.5f, 0.5f,
+        //back
+        0.5f,-0.5f,-0.5f,   -0.5f, -0.5f, -0.5f,
+        0.5f,0.5f,-0.5f,   -0.5f, 0.5f, -0.5f,
+        //left
+        -0.5f,-0.5f,-0.5f,   -0.5f, -0.5f, 0.5f,
+        -0.5f,0.5f,-0.5f,   -0.5f, 0.5f, 0.5f,
+        //right
+        0.5f,-0.5f,0.5f,   0.5f, -0.5f, -0.5f,
+        0.5f,0.5f,0.5f,   0.5f, 0.5f, -0.5f,
+        //up
+        -0.5f,0.5f,0.5f,   0.5f, 0.5f, 0.5f,
+        -0.5f,0.5f,-0.5f,   0.5f, 0.5f, -0.5f,
+        //down
+        -0.5f,-0.5f,0.5f,   -0.5f, -0.5f, -0.5f,
+        0.5f,-0.5f,0.5f,   0.5f, -0.5f, -0.5f
+    };
+    GLuint indices[]={
+        //front
+        0,1,2,  1,3,2,
+        //back
+        4,5,6,  5,7,6,
+        //right
+        8,9,10,  9,11,10,
+        //left
+        12,13,14,  13,15,14,
+        //up
+        16,17,18,  17,19,18,
+        //down
+        20,21,22,  21,23,22
+
+    };
+    GLfloat texcoords[]{
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f
+    };
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
     glBindVertexArray(VAOs[VAOCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),vertices,GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+    glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
     glEnableVertexAttribArray(vPosition);
+    glEnableVertexAttribArray(vTexture);
 }
 void drawCube()
 {
+    glBindTexture(GL_TEXTURE_2D, Textures[texCube1]);
     glBindVertexArray(VAOs[VAOCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glVertexAttrib3f(vColor, 1.0f, 0.0f, 0.0f);
+    glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
     glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
 }
 void drawOuterCube()
@@ -152,14 +201,14 @@ SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
             //cube
             models.cubeModels[i*rows+j]=glm::translate(glm::mat4(1.0f),
                                 glm::vec3(j-rows/2,sin(currentFrame/1000)*
-                                                    sin(i)*cos(j),i-rows/2));
+                                                    sin(i+1)*cos(j+1),i-rows/2));
             //cone
             if (i%5 == 0) {
                 if (j%5 == 0) {
                 //place cone
                 models.coneModels[pc]=glm::translate(glm::mat4(1.0f),
                                         glm::vec3(j-rows/2,sin(currentFrame/1000)*
-                                                        sin(i)*cos(j)+1,i-rows/2));
+                                                        sin(i+1)*cos(j+1)+1,i-rows/2));
                 pc++;
                 }
             }

@@ -12,7 +12,7 @@ enum VAO_IDs {VAOCube, VAOCone, NumVAOs};
 enum VBO_IDs {VBOCube, VBOCone, NumVBOs};
 enum EBO_IDs {EBOCube, EBOCone, NumEBOs};
 enum Attrib_IDs {vPosition, vColor, vTexture};
-enum Texture_IDs {texRectangle, NumTextures};
+enum Texture_IDs {texCube1, NumTextures};
 extern GLuint VAOs[NumVAOs];
 extern GLuint VBOs[NumVBOs];
 extern GLuint Textures[NumTextures];

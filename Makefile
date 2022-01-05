@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-Wall -g
-LDFLAGS=-lGL -lglut -lGLEW -I/usr/include/glm/ -I/usr/include/GL
+LDFLAGS=-lGL -lglut -lGLEW -I/usr/include/glm/ -I/usr/include/GL -lfreeimage
 
 ODIR = obj
 SDIR = src

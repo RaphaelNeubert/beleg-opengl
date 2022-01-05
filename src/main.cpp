@@ -9,6 +9,7 @@
 #include "shader.hpp"
 #include "objects.hpp"
 #include "callback.hpp"
+#include "textures.hpp"
 
 // program wide states
 GLuint program; 
@@ -35,9 +36,10 @@ void init()
 
     glGenVertexArrays(NumVAOs,VAOs);
     glGenBuffers(NumVBOs,VBOs);
-    //glGenTextures(NumTextures,Textures);
+    glGenTextures(NumTextures,Textures);
     glGenBuffers(NumEBOs,EBOs);
 
+    loadCube1Texture();
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     generateCube();
@@ -51,7 +53,7 @@ void display()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glVertexAttrib4f(vColor, 1.0f, 0.0f, 0.0f, 1.0f);
+    glVertexAttrib4f(vColor, 1.0f, 1.0f, 1.0f, 0.0f);
 
     glm::mat4 projection=glm::mat4(1.0);
     projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
@@ -67,8 +69,7 @@ void display()
     
     for (size_t i=0; i<sizeof(models.cubeModels)/sizeof(glm::mat4); i++) {
         shader->uniformMat4("model",models.cubeModels[i]);
-        //shader->uniformMat4("model",glm::translate(glm::mat4(1.0f),glm::vec3(i,0.0f,0.0f)));
-        //drawCube();
+        drawCube();
         //drawOuterCube();
     }
     for (size_t i=0; i<sizeof(models.coneModels)/sizeof(glm::mat4); i++) {
