@@ -3,7 +3,7 @@
 
 typedef struct models {
     glm::mat4 cubeModels[2500];
-    glm::mat4 coneModels[250];
+    glm::mat4 coneModels[100];
 } SurfaceModels;
 
 void generateCube();

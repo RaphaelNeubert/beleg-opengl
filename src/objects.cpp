@@ -154,12 +154,14 @@ SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
                                 glm::vec3(j-rows/2,sin(currentFrame/1000)*
                                                     sin(i)*cos(j),i-rows/2));
             //cone
-            if (i%(n/k) == 0) {
+            if (i%5 == 0) {
+                if (j%5 == 0) {
                 //place cone
-            models.coneModels[pc]=glm::translate(glm::mat4(1.0f),
-                                    glm::vec3(j-rows/2,sin(currentFrame/1000)*
-                                                    sin(i)*cos(j)+1,i-rows/2));
-            pc++;
+                models.coneModels[pc]=glm::translate(glm::mat4(1.0f),
+                                        glm::vec3(j-rows/2,sin(currentFrame/1000)*
+                                                        sin(i)*cos(j)+1,i-rows/2));
+                pc++;
+                }
             }
         }
     }

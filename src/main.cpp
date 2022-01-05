@@ -68,12 +68,12 @@ void display()
     for (size_t i=0; i<sizeof(models.cubeModels)/sizeof(glm::mat4); i++) {
         shader->uniformMat4("model",models.cubeModels[i]);
         //shader->uniformMat4("model",glm::translate(glm::mat4(1.0f),glm::vec3(i,0.0f,0.0f)));
-        drawCube();
-        drawOuterCube();
+        //drawCube();
+        //drawOuterCube();
     }
     for (size_t i=0; i<sizeof(models.coneModels)/sizeof(glm::mat4); i++) {
         shader->uniformMat4("model",models.coneModels[i]);
-        drawCone();
+        //drawCone();
         drawOuterCone();
     }
 
