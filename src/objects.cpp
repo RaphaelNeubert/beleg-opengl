@@ -1,4 +1,5 @@
 #include <glew.h>
+#include <gtx/transform.hpp>
 #include "common.hpp"
 #include "objects.hpp"
 
@@ -46,6 +47,7 @@ void drawCube()
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glVertexAttrib3f(vColor, 1.0f, 0.0f, 0.0f);
     glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
 }
 void drawOuterCube()
@@ -122,7 +124,7 @@ void drawCone()
     glBindVertexArray(VAOs[VAOCone]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES,306,GL_UNSIGNED_INT,0);
+    glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT,0);
     //glFlush();
 }
 void drawOuterCone()
@@ -134,4 +136,32 @@ void drawOuterCone()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(1.0f);
     glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT, 0);
+}
+
+SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
+{
+
+    GLuint n=sizeof(models.cubeModels)/sizeof(glm::mat4); //cubes
+    GLuint k=sizeof(models.coneModels)/sizeof(glm::mat4); //cones
+
+    GLint rows=sqrt(n);
+    GLuint pc=0;
+
+    for (GLint i=0; i<rows; i++) {
+        for (GLint j=0; j<rows; j++) {
+            //cube
+            models.cubeModels[i*rows+j]=glm::translate(glm::mat4(1.0f),
+                                glm::vec3(j-rows/2,sin(currentFrame/1000)*
+                                                    sin(i)*cos(j),i-rows/2));
+            //cone
+            if (i%(n/k) == 0) {
+                //place cone
+            models.coneModels[pc]=glm::translate(glm::mat4(1.0f),
+                                    glm::vec3(j-rows/2,sin(currentFrame/1000)*
+                                                    sin(i)*cos(j)+1,i-rows/2));
+            pc++;
+            }
+        }
+    }
+    return models;
 }

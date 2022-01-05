@@ -39,6 +39,7 @@ void init()
     glGenBuffers(NumEBOs,EBOs);
 
     glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
     generateCube();
     generateCone();
 }
@@ -49,21 +50,32 @@ void display()
     lastFrame=currentFrame;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 Projection=glm::mat4(1.0);
-    glm::mat4 Model=glm::mat4(1.0);
-    Projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
+
+    glVertexAttrib4f(vColor, 1.0f, 0.0f, 0.0f, 1.0f);
+
+    glm::mat4 projection=glm::mat4(1.0);
+    projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
 
     glm::mat4 view=camera.getViewMatrix();
-    shader->uniformMat4("view",view);
 
-    shader->uniformMat4("projection",Projection);
-    shader->uniformMat4("model",Model);
+
+    shader->uniformMat4("view",view);
+    shader->uniformMat4("projection",projection);
+
+    SurfaceModels models;
+    generateSurfaceModels(models, currentFrame);
     
-    glVertexAttrib4f(vColor, 1.0f, 0.0f, 0.0f, 1.0f);
-    //drawCube();
-    drawOuterCube();
-    //drawCone();
-    drawOuterCone();
+    for (size_t i=0; i<sizeof(models.cubeModels)/sizeof(glm::mat4); i++) {
+        shader->uniformMat4("model",models.cubeModels[i]);
+        //shader->uniformMat4("model",glm::translate(glm::mat4(1.0f),glm::vec3(i,0.0f,0.0f)));
+        drawCube();
+        drawOuterCube();
+    }
+    for (size_t i=0; i<sizeof(models.coneModels)/sizeof(glm::mat4); i++) {
+        shader->uniformMat4("model",models.coneModels[i]);
+        drawCone();
+        drawOuterCone();
+    }
 
     glutSwapBuffers();
 }
@@ -81,7 +93,7 @@ void cleanup()
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(WIN_W,WIN_H);
 	glutInitContextVersion(4,5);  // (4,2) (3,3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
