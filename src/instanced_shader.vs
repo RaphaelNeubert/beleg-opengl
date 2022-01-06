@@ -9,7 +9,6 @@ out vec2 TexCoord;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 model;
 
 void main(){
     gl_Position = projection*view*vInstance*vec4(vPosition,1.0f);

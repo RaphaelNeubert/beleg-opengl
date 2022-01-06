@@ -7,12 +7,15 @@ typedef struct models {
 } SurfaceModels;
 
 void generateCube();
-void drawCube();
-void drawOuterCube();
+void drawInstancedCubes(GLuint instances);
+void drawInstancedOuterCubes(GLuint instances);
 
 void generateCone();
-void drawCone();
-void drawOuterCone();
+void drawInstancedCones(GLuint instances);
+void drawInstancedOuterCones(GLuint instances);
+
+void setupSun();
+void drawSun();
 
 SurfaceModels& generateSurfaceModels(SurfaceModels& models, GLfloat currentFrame);
 #endif

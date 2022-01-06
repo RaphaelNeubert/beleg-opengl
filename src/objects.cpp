@@ -105,7 +105,7 @@ void generateCube()
     glVertexAttribDivisor(vInstance4, 1);
 
 }
-void drawCube()
+void drawInstancedCubes(GLuint instances)
 {
     glBindTexture(GL_TEXTURE_2D, Textures[texCube1]);
     glBindVertexArray(VAOs[VAOCube]);
@@ -114,10 +114,10 @@ void drawCube()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
     //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
-    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, 10000);
+    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, instances);
     glBindVertexArray(0);
 }
-void drawOuterCube()
+void drawInstancedOuterCubes(GLuint instances)
 {
     glBindVertexArray(VAOs[VAOCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
@@ -126,7 +126,7 @@ void drawOuterCube()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(5.0f);
     //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
-    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, 10000);
+    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, instances);
 }
 
 
@@ -208,7 +208,7 @@ void generateCone()
 
     glBindVertexArray(0);
 }
-void drawCone()
+void drawInstancedCones(GLuint instances)
 {
     glBindTexture(GL_TEXTURE_2D, Textures[texCube2]);
     glBindVertexArray(VAOs[VAOCone]);
@@ -217,10 +217,10 @@ void drawCone()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
     //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT,0);
-    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,400);
+    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,instances);
     //glFlush();
 }
-void drawOuterCone()
+void drawInstancedOuterCones(GLuint instances)
 {
     glBindVertexArray(VAOs[VAOCone]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
@@ -230,9 +230,24 @@ void drawOuterCone()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(1.0f);
     //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT, 0);
-    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,400);
+    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,instances);
 }
-
+void setupSun()
+{
+    glBindVertexArray(VAOs[VAOSun]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCube]);
+    glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+    glEnableVertexAttribArray(vPosition);
+}
+void drawSun()
+{
+    glBindVertexArray(VAOs[VAOSun]);
+    glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
 SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
 {
 

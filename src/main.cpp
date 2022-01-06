@@ -18,8 +18,10 @@ GLuint VBOs[NumVBOs];
 GLuint Textures[NumTextures];
 GLuint EBOs[NumEBOs];
 
-Shader *shader;
-Camera camera(glm::vec3(0.0f,0.0f,3.0f),glm::vec3(0.0f,0.0f,-1.0f));
+Shader *sceneShader;
+Shader *sunShader;
+Camera camera(glm::vec3(0.0f,3.0f,3.0f),glm::vec3(0.0f,0.0f,-1.0f));
+
 GLfloat lastX=WIN_W/2.0;
 GLfloat lastY=WIN_H/2.0;
 bool firstMouseCall=true; 
@@ -27,10 +29,12 @@ bool firstMouseCall=true;
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;
 
+glm::vec3 sunPos(0.0f,10.0f,-10.0f);
+
 void init()
 {
-    shader = new Shader("src/shader.vs","src/shader.fs");
-    shader->activate();
+    sceneShader = new Shader("src/instanced_shader.vs","src/shader.fs");
+    sunShader = new Shader("src/model_shader.vs","src/sun.fs");
 
     glClearColor(0.0f,0.3f,0.3f,1.0f);
 
@@ -46,6 +50,7 @@ void init()
     glEnable(GL_DEPTH_TEST);
     generateCube();
     generateCone();
+    setupSun();
 }
 void display()
 {
@@ -63,21 +68,32 @@ void display()
     glm::mat4 view=camera.getViewMatrix();
 
 
-    shader->uniformMat4("view",view);
-    shader->uniformMat4("projection",projection);
+    //draw world
+    sceneShader->activate();
+    sceneShader->uniformMat4("view",view);
+    sceneShader->uniformMat4("projection",projection);
 
     SurfaceModels models;
     generateSurfaceModels(models, currentFrame);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels), models.cubeModels, GL_STATIC_DRAW);
-    drawCube();
-    drawOuterCube();
+    drawInstancedCubes(10000);
+    drawInstancedOuterCubes(10000);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels), models.coneModels, GL_STATIC_DRAW);
-    drawCone();
-    drawOuterCone();
+    drawInstancedCones(400);
+    drawInstancedOuterCones(400);
+
+    //draw sun
+    sunShader->activate();
+    glm::mat4 model=glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,10.0f,-10.0f));
+    sunShader->uniformMat4("model",model);
+    sunShader->uniformMat4("view",view);
+    sunShader->uniformMat4("projection",projection);
+    drawSun();
+
 
     glutSwapBuffers();
 }
@@ -89,7 +105,8 @@ void timer(int value)
 }
 void cleanup()
 {
-    delete shader;
+    delete sceneShader;
+    delete sunShader;
 }
 
 int main(int argc, char** argv)
