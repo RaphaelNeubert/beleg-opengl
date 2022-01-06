@@ -11,7 +11,7 @@ extern GLuint program;
 enum VAO_IDs {VAOCube, VAOCone, VAOSun, NumVAOs};
 enum VBO_IDs {VBOCube, VBOCone, VBOCubeInstance, VBOConeInstance, NumVBOs};
 enum EBO_IDs {EBOCube, EBOCone, NumEBOs};
-enum Attrib_IDs {vPosition, vColor, vTexture,
+enum Attrib_IDs {vPosition, vColor, vTexture, vNormal,
                 vInstance1, vInstance2, vInstance3, vInstance4};
 enum Texture_IDs {texCube1, texCube2, NumTextures};
 extern GLuint VAOs[NumVAOs];
@@ -30,6 +30,6 @@ extern GLfloat lastY;
 extern GLfloat deltaTime;
 extern GLfloat lastFrame;
 
-extern glm::vec3 sunPos;
+extern glm::vec3 lightPos;
 #endif
 

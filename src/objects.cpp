@@ -3,37 +3,14 @@
 #include "common.hpp"
 #include "objects.hpp"
 
+static glm::vec3 calculateNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c)
+{
+    //glm::vec3 x(c[0]-a[0],c[1]-a[1],c[2]-a[2]);
+    //glm::vec3 y(b[0]-a[0],b[1]-a[1],b[2]-a[2]);
+    return glm::normalize(glm::cross(b-a,c-a));
+}
 void generateCube()
 {
-    /*
-    GLfloat vertices[]={
-        //front
-        -0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        //back
-        0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f
-    };
-    GLuint indices[]={
-        //front
-        0,1,2,  1,3,2,
-        //back
-        4,5,6,  5,7,6,
-        //right
-        1,4,3,  4,6,3,
-        //left
-        5,0,7,  0,2,7,
-        //up
-        2,3,7,  3,6,7,
-        //down
-        5,1,0,  5,4,1
-
-    };
-    */
     GLfloat vertices[]={
         //front
         -0.5f,-0.5f,0.5f,  0.5f, -0.5f, 0.5f,
@@ -54,21 +31,53 @@ void generateCube()
         -0.5f,-0.5f,0.5f,   -0.5f, -0.5f, -0.5f,
         0.5f,-0.5f,0.5f,   0.5f, -0.5f, -0.5f
     };
+
+    GLfloat normals[sizeof(vertices)/sizeof(GLfloat)];
+    for (int i=0; i<sizeof(vertices)/sizeof(GLfloat); i+=12) {
+        glm::vec3 num=calculateNormal(
+                glm::vec3(vertices[i],vertices[i+1], vertices[i+2]),
+                glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]),
+                glm::vec3(vertices[i+6],vertices[i+7],vertices[i+8]));
+        normals[i]=num.x; normals[i+1]=num.y; normals[i+2]=num.z;
+
+        num=calculateNormal(
+                glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]),
+                glm::vec3(vertices[i+6],vertices[i+7],vertices[i+8]),
+                glm::vec3(vertices[i],vertices[i+1], vertices[i+2]));
+        normals[i+3]=num.x; normals[i+4]=num.y; normals[i+5]=num.z;
+
+        num=calculateNormal(
+                glm::vec3(vertices[i+6],vertices[i+7],vertices[i+8]),
+                glm::vec3(vertices[i],vertices[i+1], vertices[i+2]),
+                glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]));
+        normals[i+6]=num.x; normals[i+7]=num.y; normals[i+8]=num.z;
+
+        num=calculateNormal(
+                glm::vec3(vertices[i+9],vertices[i+10], vertices[i+11]),
+                glm::vec3(vertices[i+6],vertices[i+7],vertices[i+8]),
+                glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]));
+        normals[i+9]=num.x; normals[i+10]=num.y; normals[i+11]=num.z;
+        //std::cout<<"x="<<num.x<<" y="<<num.y<<" z="<<num.z<<std::endl;
+    }
+    //std::cout<<"normal"<< calculateNormal(vertices[1],vertices[2],vertices[0])<<std::endl;
+    //std::cout<<"normal"<< calculateNormal(vertices[2],vertices[0],vertices[1])<<std::endl;
+    //std::cout<<"normal"<< calculateNormal(vertices[3],vertices[3],vertices[1])<<std::endl;
+
     GLuint indices[]={
         //front
         0,1,2,  1,3,2,
         //back
         4,5,6,  5,7,6,
-        //right
-        8,9,10,  9,11,10,
         //left
+        8,9,10,  9,11,10,
+        //right
         12,13,14,  13,15,14,
         //up
         16,17,18,  17,19,18,
         //down
         20,21,22,  21,23,22
     };
-    GLfloat texcoords[]{
+    GLfloat texcoords[]={
         0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
         0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
         0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
@@ -81,12 +90,15 @@ void generateCube()
     
     glBindVertexArray(VAOs[VAOCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),vertices,GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),sizeof(normals),normals);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
     glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
+    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,(void*)(sizeof(vertices)+sizeof(texcoords)));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vTexture);
+    glEnableVertexAttribArray(vNormal);
     
     //instanced rendering
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);

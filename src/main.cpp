@@ -29,7 +29,7 @@ bool firstMouseCall=true;
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;
 
-glm::vec3 sunPos(0.0f,10.0f,-10.0f);
+glm::vec3 lightPos(0.0f,10.0f,-10.0f);
 
 void init()
 {
@@ -64,14 +64,15 @@ void display()
 
     glm::mat4 projection=glm::mat4(1.0);
     projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
-
     glm::mat4 view=camera.getViewMatrix();
-
+    glm::vec3 lightColor(1.0f,1.0f,1.0f);
 
     //draw world
     sceneShader->activate();
     sceneShader->uniformMat4("view",view);
     sceneShader->uniformMat4("projection",projection);
+    sceneShader->uniformVec3("lightColor",lightColor);
+    sceneShader->uniformVec3("lightPos",lightPos);
 
     SurfaceModels models;
     generateSurfaceModels(models, currentFrame);
@@ -88,7 +89,7 @@ void display()
 
     //draw sun
     sunShader->activate();
-    glm::mat4 model=glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,10.0f,-10.0f));
+    glm::mat4 model=glm::translate(glm::mat4(1.0f),lightPos);
     sunShader->uniformMat4("model",model);
     sunShader->uniformMat4("view",view);
     sunShader->uniformMat4("projection",projection);
