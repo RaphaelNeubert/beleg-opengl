@@ -2,8 +2,8 @@
 #define OBJECTS_HPP
 
 typedef struct models {
-    glm::mat4 cubeModels[2500];
-    glm::mat4 coneModels[100];
+    glm::mat4 cubeModels[10000];
+    glm::mat4 coneModels[400];
 } SurfaceModels;
 
 void generateCube();

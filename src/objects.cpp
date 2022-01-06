@@ -67,7 +67,6 @@ void generateCube()
         16,17,18,  17,19,18,
         //down
         20,21,22,  21,23,22
-
     };
     GLfloat texcoords[]{
         0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
@@ -88,6 +87,23 @@ void generateCube()
     glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vTexture);
+    
+    //instanced rendering
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
+    glEnableVertexAttribArray(vInstance1);
+    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+    glEnableVertexAttribArray(vInstance2);
+    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+    glEnableVertexAttribArray(vInstance3);
+    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+    glEnableVertexAttribArray(vInstance4);
+    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(vInstance1, 1);
+    glVertexAttribDivisor(vInstance2, 1);
+    glVertexAttribDivisor(vInstance3, 1);
+    glVertexAttribDivisor(vInstance4, 1);
+
 }
 void drawCube()
 {
@@ -97,7 +113,9 @@ void drawCube()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
-    glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, 10000);
+    glBindVertexArray(0);
 }
 void drawOuterCube()
 {
@@ -107,7 +125,8 @@ void drawOuterCube()
     glVertexAttrib3f(vColor, 0.0f, 0.0f, 0.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(5.0f);
-    glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, 10000);
 }
 
 
@@ -120,11 +139,14 @@ void generateCone()
     GLfloat alpha=0.0;
     GLfloat vertices[n*3*2];  //*2 because of bottom circle
     GLuint indices[n*3*2];
+    //GLfloat texcoords[n*2*2];  
+    GLfloat texcoords[n*2];  
     //GLfloat* colors = new GLfloat[n*4];
 
     //shelf center
     vertices[0]=0.0f; vertices[1]=0.5; vertices[2]=0.0f;
     indices[0]=0; indices[1]=1; indices[2]=2;
+    texcoords[0]=0.5f; texcoords[1]=1.0f;
     //colors[0]=1.0f; colors[1]=0.0f; colors[2]=0.0f; colors[3]=1.0f;
 
     //shelf
@@ -137,7 +159,8 @@ void generateCone()
         indices[i*3]=0;
         indices[i*3+1]=i-1;
         indices[i*3+2]=i;
-        //colors[i*4]=0.0f; colors[i*4+1]=0.0f; colors[i*4+2]=1.0f; colors[i*4+3]=0.5f;
+        texcoords[i*2]=(GLfloat)i/n;
+        texcoords[i*2+1]=0.0f;
         alpha+=jump;
     }
     //bottom circle center
@@ -153,7 +176,6 @@ void generateCone()
         indices[i*3]=n;
         indices[i*3+1]=i;
         indices[i*3+2]=i-1;
-        //colors[i*4]=0.0f; colors[i*4+1]=0.0f; colors[i*4+2]=1.0f; colors[i*4+3]=0.5f;
         alpha+=jump;
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
@@ -161,37 +183,60 @@ void generateCone()
 
     glBindVertexArray(VAOs[VAOCone]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
-    //glBufferSubData(GL_ARRAY_BUFFER, n*3*sizeof(GLfloat),n*4*sizeof(GLfloat), colors);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),vertices,GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
-    //glVertexAttribPointer(vColor,4,GL_FLOAT,GL_FALSE,0,(void*)(n*3*sizeof(GLfloat)));
+    glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
     glEnableVertexAttribArray(vPosition);
-    //glEnableVertexAttribArray(vColor);
+    glEnableVertexAttribArray(vTexture);
+
+    //instanced rendering
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
+    glEnableVertexAttribArray(vInstance1);
+    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+    glEnableVertexAttribArray(vInstance2);
+    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+    glEnableVertexAttribArray(vInstance3);
+    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+    glEnableVertexAttribArray(vInstance4);
+    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(vInstance1, 1);
+    glVertexAttribDivisor(vInstance2, 1);
+    glVertexAttribDivisor(vInstance3, 1);
+    glVertexAttribDivisor(vInstance4, 1);
+
+    glBindVertexArray(0);
 }
 void drawCone()
 {
+    glBindTexture(GL_TEXTURE_2D, Textures[texCube2]);
     glBindVertexArray(VAOs[VAOCone]);
+    glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT,0);
+    glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
+    //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT,0);
+    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,400);
     //glFlush();
 }
 void drawOuterCone()
 {
     glBindVertexArray(VAOs[VAOCone]);
+    glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glBindVertexArray(VAOs[VAOCone]);
     glVertexAttrib3f(vColor, 0.0f, 0.0f, 0.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(1.0f);
-    glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT, 0);
+    glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,400);
 }
 
 SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
 {
 
     GLuint n=sizeof(models.cubeModels)/sizeof(glm::mat4); //cubes
-    GLuint k=sizeof(models.coneModels)/sizeof(glm::mat4); //cones
 
     GLint rows=sqrt(n);
     GLuint pc=0;

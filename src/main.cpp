@@ -40,6 +40,8 @@ void init()
     glGenBuffers(NumEBOs,EBOs);
 
     loadCube1Texture();
+    loadCube2Texture();
+
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     generateCube();
@@ -66,17 +68,16 @@ void display()
 
     SurfaceModels models;
     generateSurfaceModels(models, currentFrame);
-    
-    for (size_t i=0; i<sizeof(models.cubeModels)/sizeof(glm::mat4); i++) {
-        shader->uniformMat4("model",models.cubeModels[i]);
-        drawCube();
-        //drawOuterCube();
-    }
-    for (size_t i=0; i<sizeof(models.coneModels)/sizeof(glm::mat4); i++) {
-        shader->uniformMat4("model",models.coneModels[i]);
-        //drawCone();
-        drawOuterCone();
-    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels), models.cubeModels, GL_STATIC_DRAW);
+    drawCube();
+    drawOuterCube();
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels), models.coneModels, GL_STATIC_DRAW);
+    drawCone();
+    drawOuterCone();
 
     glutSwapBuffers();
 }
