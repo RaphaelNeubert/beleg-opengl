@@ -54,7 +54,7 @@ void generateCube()
         0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f
     };
     GLfloat normals[sizeof(vertices)/sizeof(GLfloat)];
-    for (int i=0; i<sizeof(vertices)/sizeof(GLfloat); i+=12) {
+    for (GLuint i=0; i<sizeof(vertices)/sizeof(GLfloat); i+=12) {
         glm::vec3 num=calculateNormal(
                 glm::vec3(vertices[i],vertices[i+1], vertices[i+2]),
                 glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]),
@@ -147,7 +147,6 @@ void generateCone()
     GLfloat vertices[n*3*2];  //*2 because of bottom circle
     GLuint indices[n*3*2];
     GLfloat normals[n*3*2];
-    //GLfloat texcoords[n*2*2];  
     GLfloat texcoords[n*2];  
 
     //shelf center
@@ -182,8 +181,6 @@ void generateCone()
         indices[i*3]=n;
         indices[i*3+1]=i;
         indices[i*3+2]=i-1;
-        //texcoords[i*2]=(GLfloat)i/2/n;
-        //texcoords[i*2+1]=0.0f;
         alpha+=jump;
     }
     //calculate normals
@@ -204,11 +201,13 @@ void generateCone()
             glm::vec3(vertices[0],vertices[1],vertices[2]));
     normals[101*3]=num.x; normals[101*3+1]=num.y; normals[101*3+2]=num.z;
     normals[n*3+101*3]=0.0f; normals[n*3+101*3+1]=-1.0f; normals[n*3+101*3+2]=0.0f;
+    /*
     for (int i=0; i<3*n*2; i+=3) {
         std::cout<<"i="<<i<<" val="<<normals[i]<<"   ";
         std::cout<<"i="<<i+1<<" val="<<normals[i+1]<<"   ";
         std::cout<<"i="<<i+2<<" val="<<normals[i+2]<<"   "<<std::endl;
     }
+    */
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
