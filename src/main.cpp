@@ -29,7 +29,7 @@ bool firstMouseCall=true;
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;
 
-glm::vec3 lightPos(0.0f,10.0f,-10.0f);
+glm::vec3 lightPos(0.0f,-10.0f,-10.0f);
 
 void init()
 {
@@ -79,13 +79,13 @@ void display()
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels), models.cubeModels, GL_STATIC_DRAW);
-    drawInstancedCubes(10000);
-    drawInstancedOuterCubes(10000);
+    //drawInstancedCubes(10000);
+    //drawInstancedOuterCubes(10000);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels), models.coneModels, GL_STATIC_DRAW);
     drawInstancedCones(400);
-    drawInstancedOuterCones(400);
+    //drawInstancedOuterCones(400);
 
     //draw sun
     sunShader->activate();

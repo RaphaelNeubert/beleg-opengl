@@ -31,7 +31,28 @@ void generateCube()
         -0.5f,-0.5f,0.5f,   -0.5f, -0.5f, -0.5f,
         0.5f,-0.5f,0.5f,   0.5f, -0.5f, -0.5f
     };
-
+    GLuint indices[]={
+        //front
+        0,1,2,  1,3,2,
+        //back
+        4,5,6,  5,7,6,
+        //left
+        8,9,10,  9,11,10,
+        //right
+        12,13,14,  13,15,14,
+        //up
+        16,17,18,  17,19,18,
+        //down
+        20,21,22,  21,23,22
+    };
+    GLfloat texcoords[]={
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
+        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f
+    };
     GLfloat normals[sizeof(vertices)/sizeof(GLfloat)];
     for (int i=0; i<sizeof(vertices)/sizeof(GLfloat); i+=12) {
         glm::vec3 num=calculateNormal(
@@ -59,32 +80,6 @@ void generateCube()
         normals[i+9]=num.x; normals[i+10]=num.y; normals[i+11]=num.z;
         //std::cout<<"x="<<num.x<<" y="<<num.y<<" z="<<num.z<<std::endl;
     }
-    //std::cout<<"normal"<< calculateNormal(vertices[1],vertices[2],vertices[0])<<std::endl;
-    //std::cout<<"normal"<< calculateNormal(vertices[2],vertices[0],vertices[1])<<std::endl;
-    //std::cout<<"normal"<< calculateNormal(vertices[3],vertices[3],vertices[1])<<std::endl;
-
-    GLuint indices[]={
-        //front
-        0,1,2,  1,3,2,
-        //back
-        4,5,6,  5,7,6,
-        //left
-        8,9,10,  9,11,10,
-        //right
-        12,13,14,  13,15,14,
-        //up
-        16,17,18,  17,19,18,
-        //down
-        20,21,22,  21,23,22
-    };
-    GLfloat texcoords[]={
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f,
-        0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f
-    };
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
@@ -151,15 +146,14 @@ void generateCone()
     GLfloat alpha=0.0;
     GLfloat vertices[n*3*2];  //*2 because of bottom circle
     GLuint indices[n*3*2];
+    GLfloat normals[n*3*2];
     //GLfloat texcoords[n*2*2];  
     GLfloat texcoords[n*2];  
-    //GLfloat* colors = new GLfloat[n*4];
 
     //shelf center
     vertices[0]=0.0f; vertices[1]=0.5; vertices[2]=0.0f;
     indices[0]=0; indices[1]=1; indices[2]=2;
     texcoords[0]=0.5f; texcoords[1]=1.0f;
-    //colors[0]=1.0f; colors[1]=0.0f; colors[2]=0.0f; colors[3]=1.0f;
 
     //shelf
     for (GLuint i=1; i<n; i++) {
@@ -188,19 +182,48 @@ void generateCone()
         indices[i*3]=n;
         indices[i*3+1]=i;
         indices[i*3+2]=i-1;
+        //texcoords[i*2]=(GLfloat)i/2/n;
+        //texcoords[i*2+1]=0.0f;
         alpha+=jump;
     }
+    //calculate normals
+    normals[0]=0.0f; normals[1]=1.0f; normals[2]=0.0f;
+    normals[n*3]=0.0f; normals[n*3+1]=-1.0f; normals[n*3+2]=0.0f;
+    for (GLuint i=1; i<n-1; i++) {
+        glm::vec3 num=calculateNormal(
+                glm::vec3(vertices[i*3],vertices[i*3+1], vertices[i*3+2]),
+                glm::vec3(vertices[i*3+3],vertices[i*3+4],vertices[i*3+5]),
+                glm::vec3(vertices[0],vertices[1],vertices[2]));
+        normals[i*3]=num.x; normals[i*3+1]=num.y; normals[i*3+2]=num.z;
+        normals[n*3+i*3]=0.0f; normals[n*3+i*3+1]=-1.0f; normals[n*3+i*3+2]=0.0f;
+    }
+    //calculate last normal using first data point
+    glm::vec3 num=calculateNormal(
+            glm::vec3(vertices[101*3],vertices[101*3+1], vertices[101*3+2]),
+            glm::vec3(vertices[3],vertices[4],vertices[5]),
+            glm::vec3(vertices[0],vertices[1],vertices[2]));
+    normals[101*3]=num.x; normals[101*3+1]=num.y; normals[101*3+2]=num.z;
+    normals[n*3+101*3]=0.0f; normals[n*3+101*3+1]=-1.0f; normals[n*3+101*3+2]=0.0f;
+    for (int i=0; i<3*n*2; i+=3) {
+        std::cout<<"i="<<i<<" val="<<normals[i]<<"   ";
+        std::cout<<"i="<<i+1<<" val="<<normals[i+1]<<"   ";
+        std::cout<<"i="<<i+2<<" val="<<normals[i+2]<<"   "<<std::endl;
+    }
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glBindVertexArray(VAOs[VAOCone]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),vertices,GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),sizeof(normals),normals);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
     glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
+    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,(void*)(sizeof(vertices)+sizeof(texcoords)));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vTexture);
+    glEnableVertexAttribArray(vNormal);
 
     //instanced rendering
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
