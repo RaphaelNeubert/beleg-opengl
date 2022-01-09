@@ -8,6 +8,7 @@ void reshape(int w, int h)
 }
 void keyboard(unsigned char key, int mouseX, int mouseY)
 {
+    unsigned int state;
     switch(key) {
         case 'w':
             camera.keyInput(FORWARDS, deltaTime);
@@ -21,11 +22,52 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
         case 'd':
             camera.keyInput(RIGHT, deltaTime);
             break;
+        case 'e':
+            camera.keyInput(UP, deltaTime);
+            break;
+        case 'q':
+            camera.keyInput(DOWN, deltaTime);
+            break;
 
         case 'l':
-            unsigned int state = settings.light+1;
+            state=settings.light+1;
             if (state == NumLightTypes) settings.light=POSITIONAL_CUBE;
             else settings.light=static_cast<lightType>(state);
+            break;
+        case 'm':
+            state=settings.wMode+1;
+            if (state == NumWireframeModes) settings.wMode=CUBE;
+            else settings.wMode=static_cast<wireframeMode>(state);
+            break;
+        case 'c':
+            state=settings.lightColor+1;
+            if (state == NumColorModes) settings.lightColor=WHITE;
+            else settings.lightColor=static_cast<colorMode>(state);
+            break;
+        case '1':
+            if (settings.depthTest) {
+                glDisable(GL_DEPTH_TEST);
+                settings.depthTest=false;
+                puts("disabled depth test");
+            }
+            else {
+                glEnable(GL_DEPTH_TEST);
+                settings.depthTest=true;
+                puts("enabled depth test");
+            }
+            break;
+        case '2':
+            if (settings.faceCulling){
+                glDisable(GL_CULL_FACE);
+                settings.faceCulling=false;
+                puts("disabled face culling");
+            }
+            else{
+                glEnable(GL_CULL_FACE);
+                settings.faceCulling=true;
+                puts("enabled face culling");
+            }
+            break;
     }
 }
 void passivemouse(int mouseX, int mouseY)
@@ -47,11 +89,11 @@ void passivemouse(int mouseX, int mouseY)
     camera.mouseMovement(xoffset,yoffset);
 
     //resets mouse to middle at the boarder
-    if (mouseX < 100 || mouseX > WIN_W-100) {
+    if (mouseX < 200 || mouseX > WIN_W-200) {
         lastX=WIN_W/2;
         glutWarpPointer(WIN_W/2,mouseY);
     }
-    if (mouseY < 100 || mouseY > WIN_H-100) {
+    if (mouseY < 200 || mouseY > WIN_H-200) {
         lastY=WIN_H/2;
         glutWarpPointer(mouseX,WIN_H/2);
     }

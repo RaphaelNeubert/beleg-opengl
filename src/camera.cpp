@@ -50,6 +50,12 @@ void Camera::keyInput(Direction dir, float deltaTime)
         case RIGHT:
             pos+=right*velocity;
             break;
+        case UP:
+            pos+=up*velocity;
+            break;
+        case DOWN:
+            pos-=up*velocity;
+            break;
     }
 }
 glm::vec3 Camera::getPos()

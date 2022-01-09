@@ -3,7 +3,7 @@
 #include <glm.hpp>
 #include <glew.h>
 
-enum Direction{FORWARDS,BACKWARDS,LEFT,RIGHT};
+enum Direction{FORWARDS,BACKWARDS,LEFT,RIGHT,UP,DOWN};
 
 class Camera
 {

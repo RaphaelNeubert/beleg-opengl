@@ -14,8 +14,8 @@ void generateCone();
 void drawInstancedCones(GLuint instances);
 void drawInstancedOuterCones(GLuint instances);
 
-void setupSun();
-void drawSun();
+void setupLightCube();
+void drawLightCube();
 
 SurfaceModels& generateSurfaceModels(SurfaceModels& models, GLfloat currentFrame);
 #endif

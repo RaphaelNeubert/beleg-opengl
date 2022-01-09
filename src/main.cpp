@@ -31,6 +31,10 @@ bool firstMouseCall=true;
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;
 
+//wireframe Modes
+bool wModeDef[5][4]={{1,1,1,0},{0,1,0,1},{1,0,1,0},{1,1,1,1},{1,0,1,1}};
+glm::vec3 Colors[4]={glm::vec3(1.0f,1.0f,1.0f),glm::vec3(1.0f,0.0f,1.0f),
+                     glm::vec3(0.0f,0.0f,1.0f),glm::vec3(1.0f,0.0f,0.0f)};
 
 void init()
 {
@@ -42,6 +46,8 @@ void init()
     settings.light=POSITIONAL_CUBE;
     settings.faceCulling=true;
     settings.depthTest=true;
+    settings.wMode=CUBE;
+    settings.lightColor=WHITE;
 
     glClearColor(0.0f,0.3f,0.3f,1.0f);
 
@@ -58,7 +64,7 @@ void init()
 
     generateCube();
     generateCone();
-    setupSun();
+    setupLightCube();
 }
 void display()
 {
@@ -68,14 +74,12 @@ void display()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glVertexAttrib4f(vColor, 1.0f, 1.0f, 1.0f, 0.0f);
-
     glm::mat4 projection=glm::mat4(1.0);
-    projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
+    projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,200.0f);
     glm::mat4 view=camera.getViewMatrix();
+    glm::vec3 lightColor=Colors[settings.lightColor];
 
     if (settings.light == POSITIONAL_CUBE) {
-        glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
         glm::vec3 lightPos=glm::vec3(0.0f,10.0f,-10.0f);
         glm::vec3 viewPos=camera.getPos();
         //draw light Cube
@@ -84,7 +88,8 @@ void display()
         lightCubeShader->uniformMat4("model",model);
         lightCubeShader->uniformMat4("view",view);
         lightCubeShader->uniformMat4("projection",projection);
-        drawSun();
+        lightCubeShader->uniformVec3("lightColor",lightColor);
+        drawLightCube();
 
         //setup shader for scene
         sceneShader->activate();
@@ -95,7 +100,6 @@ void display()
         sceneShader->uniformVec3("viewPos",viewPos);
     }
     else {
-        glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
         glm::vec3 lightPos=camera.getPos();
         glm::vec3 direction=camera.getFront();
         GLfloat angleOpen=glm::cos(glm::radians(12.5f));
@@ -112,20 +116,19 @@ void display()
         sceneFLShader->uniformFloat("outerAngleOpen",outerAngleOpen);
 
     }
-    //draw world
 
     SurfaceModels models;
     generateSurfaceModels(models, currentFrame);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels), models.cubeModels, GL_STATIC_DRAW);
-    drawInstancedCubes(10000);
-    drawInstancedOuterCubes(10000);
+    if (wModeDef[settings.wMode][0]) drawInstancedCubes(10000);
+    if (wModeDef[settings.wMode][1]) drawInstancedOuterCubes(10000);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels), models.coneModels, GL_STATIC_DRAW);
-    drawInstancedCones(400);
-    //drawInstancedOuterCones(400);
+    if (wModeDef[settings.wMode][2]) drawInstancedCones(400);
+    if (wModeDef[settings.wMode][3]) drawInstancedOuterCones(400);
 
 
 

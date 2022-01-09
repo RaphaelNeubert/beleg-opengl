@@ -120,7 +120,6 @@ void drawInstancedCubes(GLuint instances)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
-    //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
     glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, instances);
     glBindVertexArray(0);
 }
@@ -131,8 +130,8 @@ void drawInstancedOuterCubes(GLuint instances)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glVertexAttrib3f(vColor, 0.0f, 0.0f, 0.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glLineWidth(5.0f);
-    //glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0);
+    if (settings.wMode == ALLONLY) glLineWidth(2.0f);
+    else glLineWidth(5.0f);
     glDrawElementsInstanced(GL_TRIANGLES,36,GL_UNSIGNED_INT, 0, instances);
 }
 
@@ -250,9 +249,7 @@ void drawInstancedCones(GLuint instances)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glVertexAttrib3f(vColor, 1.0f, 1.0f, 1.0f);
-    //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT,0);
     glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,instances);
-    //glFlush();
 }
 void drawInstancedOuterCones(GLuint instances)
 {
@@ -263,19 +260,18 @@ void drawInstancedOuterCones(GLuint instances)
     glVertexAttrib3f(vColor, 0.0f, 0.0f, 0.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(1.0f);
-    //glDrawElements(GL_TRIANGLES,612,GL_UNSIGNED_INT, 0);
     glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,instances);
 }
-void setupSun()
+void setupLightCube()
 {
-    glBindVertexArray(VAOs[VAOSun]);
+    glBindVertexArray(VAOs[VAOLightCube]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCube]);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
     glEnableVertexAttribArray(vPosition);
 }
-void drawSun()
+void drawLightCube()
 {
-    glBindVertexArray(VAOs[VAOSun]);
+    glBindVertexArray(VAOs[VAOLightCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
