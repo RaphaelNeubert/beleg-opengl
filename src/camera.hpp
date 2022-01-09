@@ -24,6 +24,9 @@ class Camera
         glm::mat4 getViewMatrix();
         void mouseMovement(int xoffset, int yoffset);
         void keyInput(Direction dir, float deltaTime);
+
+        glm::vec3 getPos();
+        glm::vec3 getFront();
 };
 
 #endif

@@ -21,6 +21,11 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
         case 'd':
             camera.keyInput(RIGHT, deltaTime);
             break;
+
+        case 'l':
+            unsigned int state = settings.light+1;
+            if (state == NumLightTypes) settings.light=POSITIONAL_CUBE;
+            else settings.light=static_cast<lightType>(state);
     }
 }
 void passivemouse(int mouseX, int mouseY)

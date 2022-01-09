@@ -19,8 +19,10 @@ GLuint Textures[NumTextures];
 GLuint EBOs[NumEBOs];
 
 Shader *sceneShader;
-Shader *sunShader;
+Shader *sceneFLShader;
+Shader *lightCubeShader;
 Camera camera(glm::vec3(0.0f,3.0f,3.0f),glm::vec3(0.0f,0.0f,-1.0f));
+Settings settings;
 
 GLfloat lastX=WIN_W/2.0;
 GLfloat lastY=WIN_H/2.0;
@@ -29,12 +31,17 @@ bool firstMouseCall=true;
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;
 
-glm::vec3 lightPos(0.0f,10.0f,-10.0f);
 
 void init()
 {
-    sceneShader = new Shader("src/instanced_shader.vs","src/shader.fs");
-    sunShader = new Shader("src/model_shader.vs","src/sun.fs");
+    sceneShader = new Shader("src/instanced_shader.vs","src/positionalLight.fs");
+    sceneFLShader = new Shader("src/instanced_shader.vs","src/flashlight.fs");
+    lightCubeShader = new Shader("src/model_shader.vs","src/lightCube.fs");
+
+    //set default Settings
+    settings.light=POSITIONAL_CUBE;
+    settings.faceCulling=true;
+    settings.depthTest=true;
 
     glClearColor(0.0f,0.3f,0.3f,1.0f);
 
@@ -43,11 +50,12 @@ void init()
     glGenTextures(NumTextures,Textures);
     glGenBuffers(NumEBOs,EBOs);
 
-    loadCube1Texture();
-    loadCube2Texture();
+    loadCubeTexture();
+    loadConeTexture();
 
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    if (settings.faceCulling) glEnable(GL_CULL_FACE);
+    if (settings.depthTest) glEnable(GL_DEPTH_TEST);
+
     generateCube();
     generateCone();
     setupSun();
@@ -65,14 +73,42 @@ void display()
     glm::mat4 projection=glm::mat4(1.0);
     projection=glm::perspective(glm::radians(45.0f),1.0f,0.1f,100.0f);
     glm::mat4 view=camera.getViewMatrix();
-    glm::vec3 lightColor(1.0f,1.0f,1.0f);
 
+    if (settings.light == POSITIONAL_CUBE) {
+        glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
+        glm::vec3 lightPos=glm::vec3(0.0f,10.0f,-10.0f);
+        //draw light Cube
+        lightCubeShader->activate();
+        glm::mat4 model=glm::translate(glm::mat4(1.0f),lightPos);
+        lightCubeShader->uniformMat4("model",model);
+        lightCubeShader->uniformMat4("view",view);
+        lightCubeShader->uniformMat4("projection",projection);
+        drawSun();
+
+        //setup shader for scene
+        sceneShader->activate();
+        sceneShader->uniformMat4("view",view);
+        sceneShader->uniformMat4("projection",projection);
+        sceneShader->uniformVec3("lightColor",lightColor);
+        sceneShader->uniformVec3("lightPos",lightPos);
+    }
+    else {
+        glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
+        glm::vec3 lightPos=camera.getPos();
+        glm::vec3 lightDir=camera.getFront();
+        GLfloat angleOpen=glm::cos(glm::radians(15.0f));
+
+        //setup shader for flashlight scene 
+        sceneFLShader->activate();
+        sceneFLShader->uniformMat4("view",view);
+        sceneFLShader->uniformMat4("projection",projection);
+        sceneFLShader->uniformVec3("lightColor",lightColor);
+        sceneFLShader->uniformVec3("lightPos",lightPos);
+        sceneFLShader->uniformVec3("lightDir",lightDir);
+        sceneFLShader->uniformFloat("angleOpen",angleOpen);
+
+    }
     //draw world
-    sceneShader->activate();
-    sceneShader->uniformMat4("view",view);
-    sceneShader->uniformMat4("projection",projection);
-    sceneShader->uniformVec3("lightColor",lightColor);
-    sceneShader->uniformVec3("lightPos",lightPos);
 
     SurfaceModels models;
     generateSurfaceModels(models, currentFrame);
@@ -87,13 +123,6 @@ void display()
     drawInstancedCones(400);
     //drawInstancedOuterCones(400);
 
-    //draw sun
-    sunShader->activate();
-    glm::mat4 model=glm::translate(glm::mat4(1.0f),lightPos);
-    sunShader->uniformMat4("model",model);
-    sunShader->uniformMat4("view",view);
-    sunShader->uniformMat4("projection",projection);
-    drawSun();
 
 
     glutSwapBuffers();
@@ -107,7 +136,7 @@ void timer(int value)
 void cleanup()
 {
     delete sceneShader;
-    delete sunShader;
+    delete lightCubeShader;
 }
 
 int main(int argc, char** argv)

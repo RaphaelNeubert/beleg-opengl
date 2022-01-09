@@ -20,6 +20,7 @@ extern GLuint Textures[NumTextures];
 extern GLuint EBOs[NumEBOs];
 
 extern Shader *sceneShader;
+extern Shader *sceneFLShader;
 extern Shader *sunShader;
 extern Camera camera;
 
@@ -30,6 +31,14 @@ extern GLfloat lastY;
 extern GLfloat deltaTime;
 extern GLfloat lastFrame;
 
-extern glm::vec3 lightPos;
+enum lightType {POSITIONAL_CUBE, FLASHLIGHT, NumLightTypes};
+
+typedef struct sceneSettings {
+    lightType light;
+    bool faceCulling;
+    bool depthTest;
+}Settings;
+
+extern Settings settings;
 #endif
 

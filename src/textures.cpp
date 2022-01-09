@@ -4,7 +4,7 @@
 #include <freeglut.h>
 
 
-void loadCube1Texture()
+void loadCubeTexture()
 {
     FreeImage_Initialise(TRUE);
     FIBITMAP *bitmapData;
@@ -30,7 +30,7 @@ void loadCube1Texture()
     FreeImage_Unload(bitmapData);
 }
 
-void loadCube2Texture()
+void loadConeTexture()
 {
     FreeImage_Initialise(TRUE);
     FIBITMAP *bitmapData;

@@ -52,3 +52,11 @@ void Camera::keyInput(Direction dir, float deltaTime)
             break;
     }
 }
+glm::vec3 Camera::getPos()
+{
+    return pos;
+}
+glm::vec3 Camera::getFront()
+{
+    return front;
+}
