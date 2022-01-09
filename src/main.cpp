@@ -77,6 +77,7 @@ void display()
     if (settings.light == POSITIONAL_CUBE) {
         glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
         glm::vec3 lightPos=glm::vec3(0.0f,10.0f,-10.0f);
+        glm::vec3 viewPos=camera.getPos();
         //draw light Cube
         lightCubeShader->activate();
         glm::mat4 model=glm::translate(glm::mat4(1.0f),lightPos);
@@ -91,12 +92,14 @@ void display()
         sceneShader->uniformMat4("projection",projection);
         sceneShader->uniformVec3("lightColor",lightColor);
         sceneShader->uniformVec3("lightPos",lightPos);
+        sceneShader->uniformVec3("viewPos",viewPos);
     }
     else {
         glm::vec3 lightColor=glm::vec3(1.0f,1.0f,1.0f);
         glm::vec3 lightPos=camera.getPos();
-        glm::vec3 lightDir=camera.getFront();
-        GLfloat angleOpen=glm::cos(glm::radians(15.0f));
+        glm::vec3 direction=camera.getFront();
+        GLfloat angleOpen=glm::cos(glm::radians(12.5f));
+        GLfloat outerAngleOpen=glm::cos(glm::radians(17.5f));
 
         //setup shader for flashlight scene 
         sceneFLShader->activate();
@@ -104,8 +107,9 @@ void display()
         sceneFLShader->uniformMat4("projection",projection);
         sceneFLShader->uniformVec3("lightColor",lightColor);
         sceneFLShader->uniformVec3("lightPos",lightPos);
-        sceneFLShader->uniformVec3("lightDir",lightDir);
+        sceneFLShader->uniformVec3("direction",direction);
         sceneFLShader->uniformFloat("angleOpen",angleOpen);
+        sceneFLShader->uniformFloat("outerAngleOpen",outerAngleOpen);
 
     }
     //draw world
