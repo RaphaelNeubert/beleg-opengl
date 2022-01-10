@@ -4,7 +4,7 @@
 #include "shader.hpp"
 #include "camera.hpp"
 
-#define WIN_W 1080
+#define WIN_W 1920
 #define WIN_H 1080
 
 extern GLuint program; 
@@ -42,7 +42,9 @@ typedef struct sceneSettings {
     bool depthTest;
     wireframeMode wMode;
     colorMode lightColor;
-
+    GLfloat winW;
+    GLfloat winH;
+    bool mViewports;
 }Settings;
 
 extern Settings settings;

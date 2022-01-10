@@ -16,6 +16,10 @@ glm::mat4 Camera::getViewMatrix()
 {
     return glm::lookAt(pos,pos+front,up);
 }
+glm::mat4 Camera::getPositionViewMatrix(glm::vec3 manualFront)
+{
+    return glm::lookAt(pos,pos+manualFront,up);
+}
 
 void Camera::mouseMovement(int xoffset, int yoffset)
 {

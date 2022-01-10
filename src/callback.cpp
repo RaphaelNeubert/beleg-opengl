@@ -3,8 +3,11 @@
 #include "common.hpp"
 #include <glut.h>
 
+
 void reshape(int w, int h)
 {
+    settings.winW=(GLfloat)w;
+    settings.winH=(GLfloat)h;
 }
 void keyboard(unsigned char key, int mouseX, int mouseY)
 {
@@ -48,24 +51,28 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
             if (settings.depthTest) {
                 glDisable(GL_DEPTH_TEST);
                 settings.depthTest=false;
-                puts("disabled depth test");
             }
             else {
                 glEnable(GL_DEPTH_TEST);
                 settings.depthTest=true;
-                puts("enabled depth test");
             }
             break;
         case '2':
-            if (settings.faceCulling){
+            if (settings.faceCulling) {
                 glDisable(GL_CULL_FACE);
                 settings.faceCulling=false;
-                puts("disabled face culling");
             }
-            else{
+            else {
                 glEnable(GL_CULL_FACE);
                 settings.faceCulling=true;
-                puts("enabled face culling");
+            }
+            break;
+        case 'v':
+            if (settings.mViewports) {
+                settings.mViewports=false;
+            }
+            else {
+                settings.mViewports=true;
             }
             break;
     }
@@ -89,12 +96,13 @@ void passivemouse(int mouseX, int mouseY)
     camera.mouseMovement(xoffset,yoffset);
 
     //resets mouse to middle at the boarder
-    if (mouseX < 200 || mouseX > WIN_W-200) {
-        lastX=WIN_W/2;
-        glutWarpPointer(WIN_W/2,mouseY);
+    if ((float)mouseX < settings.winW/10 || 
+            (float)mouseX > settings.winW-settings.winW/10) {
+        lastX=settings.winW/2;
+        glutWarpPointer(settings.winW/2,mouseY);
     }
-    if (mouseY < 200 || mouseY > WIN_H-200) {
-        lastY=WIN_H/2;
-        glutWarpPointer(mouseX,WIN_H/2);
+    if (mouseY < settings.winH/10|| mouseY > settings.winH-settings.winH/10) {
+        lastY=settings.winH/2;
+        glutWarpPointer(mouseX,settings.winH/2);
     }
 }
