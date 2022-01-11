@@ -1,0 +1,125 @@
+\documentclass{article}
+
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{standalone}
+\usepackage{float}
+\usepackage{color}
+\usepackage[shortlabels]{enumitem}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[ngerman]{babel}
+\usepackage{lscape}
+\usepackage{cancel}
+\usepackage{dirtytalk}
+\graphicspath{ {./images/} }
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    {\scshape\LARGE Hochschule für Technik und Wirtschaft Dresden \par}
+    \vspace{1cm}
+    {\scshape\Large Beleg \glqq Computergrafik I\grqq\par}
+    \vspace{1.5cm}
+    {\huge\bfseries Dokumentation\par}
+    \vspace{2cm}
+    {\Large\itshape Raphael Neubert \par}
+    \vfill
+    \begin{minipage}{0.3\textwidth}
+        Studiengang:\\
+        Studiengruppe:\\
+        Matrikelnummer:
+    \end{minipage}
+    \begin{minipage}{0.3\textwidth}
+        Informatik\\
+        20/041/61\\
+        49916
+    \end{minipage}
+    \vfill
+
+    {\large \today\par}
+\end{titlepage}
+\tableofcontents
+\newpage
+
+\section{Aufgabenbeschreibung}
+Aufgabe der Belegarbeit ist es ein Programm zu schreiben, welches eine interaktive, zeitlich animierte Szene
+mit mehreren dreidimensionalen Objekten, enthält. Die Objekte unterscheiden sich dabei in ihrer Form und Farbe
+bzw. ihrer Textur. Die Objekte sollen dann durch verschiedenartigen Lichtquellen beleuchtet werden so, dass
+auf den Objekten die unterschiedlichen Beleuchtungseffekte sichtbar werden. Das Ergebnis soll anschließend
+gleichzeitig in mehreren Viewports, die verschiedene Ansichten und Projektionen zeigen, dargestellt werden.
+Zur Entwicklung soll die Programmiersprache C++ mit den Bibliotheken freeglut, glew, freeimage und glm genommen werden.
+Das Ergebnis dieser Aufgabe soll zum Schluss als Visual-Studio-C/C++ Projekt, sowie in ausführbarer Form
+als exe-Datei, vorliegen.
+\section{Vorgehensweise}
+Zu Beginn meiner Bearbeitung der Belegarbeit habe ich mich intensiv mit der Aufgabenstellung beschäftigt und Ideen
+für die konkrete Umsetzung gesammelt. Anschließend habe ich überlegt welche meiner Ideen, in der Umsetzung mit meinem
+Wissensstand und der, aufgrund vieler anderer Belegarbeiten, doch recht knappen Zeit, machbar sind.
+Nach den notwendigen Überlegungen traf ich dann eine Entscheidung.\par
+\medskip
+Ich wollte eine Szene Programmieren in der man mich frei bewegen kann. Die Steuerung sollte dabei der eines
+Computerspiels ähneln. Als Objekte entschloss ich mich einen Würfel und einen Kegel zu nehmen wobei sich die
+Texturierung der beiden Objektarten unterscheidet. Von den Objekten wollte ich dann sehr viele Instanzen erzeugen und diese
+sich in ihrer Position zeitlich verändern lassen. Als Lichtquellen entschloss ich mich eine art Lichtwürfel, ähnlich einer
+Sonne mit dem Unterschied das eine Sonne ein direktionales, der Würfel aber ein positionelles Licht, ist und eine
+art Taschenlampe, zu nehmen. Bei den Viewports entschloss ich mich für vier Verschiedene. Der Erste mit einer realistischen, 
+perspektivischen Ansicht, der Zweite mit einer orthogonalen Seitenansicht, der Dritte mit einer orthogonalen
+Draufsicht und der vierte mit einer weiteren orthogonalen Ansicht dessen Betrachtungswinkel abhängig von der Mausposition ist.
+Ich nahm mir auch vor einige durch Tastaturevents veränderbare Einstellungen zu implementieren die Auswirkungen auf die
+Ansicht, die Lichtfarbe oder andere Effekte haben.\par
+\medskip
+Entwickelt habe ich mein Programm auf einem Linux Betriebssystem. Erst nach dem das Programm fertig war habe ich es
+mit Visual-Studio geöffnet und die notwendigen Veränderungen vorgenommen um es auf Windows lauffähig zu bekommen.
+Zur Versionierung verwendete ich Git und ein privates Repository auf Github.\par
+\medskip
+Am Anfang der Entwicklung entschloss ich mich keine meiner bisher in den Praktika verwendeten Funktionen zu verwenden
+sondern von Null anzufangen. Deshalb entwickelte ich zunächst eine Klasse \say{Shader} welche mir eine einfache
+Handhabung von verschiedenen Shaderprogrammen ermöglicht. Dazu gehört das Compilieren und
+Aktivieren von Shadern sowie das setzen von uniform Variablen. Anschließend entwickelte ich die Klasse \say{Camera} welche
+für die Berechnung der \say{View}-Matrizen dient. Die Inhalte der Klassen orientierte ich großteils an meinen im Praktikum
+verwendeten prozeduralen Implementierungen. Anschließend erstellte ich eine \say{main} Datei und füllte sie mit einem
+Grundgerüst für ein OpenGL Programm.\par
+\medskip
+Nach der Entwicklung der wichtigsten Grundabstraktionen entwickelte ich Funktionen zur Generierung und Zeichnung
+der gewählten Objekte: Würfel und Kegel. Ich entschloss mich dabei indiziertes Zeichnen zu verwenden um Redundanzen zu
+vermeiden. Auf Texturkoordinaten sowie Normalenvektoren verzichtete ich zunächst. Als nächstes schrieb ich eine
+Funktion die Objekte im Raum abhängig von der Zeit anordnet und die Instanzen dieser Objekte, in Form eines \say{structs}
+in dem sich ein Array für die Modelmatrizen der Würfel und eines für die Modelmatrizen der Kegel befindet, speichert.
+Die Würfel werden in einem Quadrat angeordnet wobei die $y$-Position abhängig von der Zeit und der $x,y$-Position des
+Würfels im Quadrat. Um eine art Verlauf zu bekommen verwendete ich verschiedene trigonometrische Funktionen.
+In jeder fünften Spalte wird in jeder fünften Reihe des Quadrats auf einem Würfel ein Kegel platziert
+die $y$-Position des Kegels verändert sich dabei genau so wie die von dem Würfel auf dem der Kegel steht.
+Ich entschloss mich anschließend eine sehr große Anzahl an Objekten zu generieren. Die dadurch notwendige Optimierung
+ist unter 6.n beschrieben. Nach dem Platztieren der Objekte entschloss ich mich das es ein guter Zeitpunkt ist 
+den Objekten Texturen zu geben. Nach der Texturierung begann ich an verschiedenen Lichtquellen zu arbeiten.
+Ich fügte den Objekten Normalenvektoren hinzu und entwickelte Fragmentshader welche die Farbe eines Fragmentes
+abhängig von dem Winkel (Normalenvektor) zur Lichtquelle, der Entfernung und dem Winkel von Objekt zur Kamera berechnet.
+Des weiteren platzierte ich einen Würfel im Raum von dem das Licht auszugehen scheint.
+Auf ähnliche Art und Weise programmierte ich dann eine Taschenlampe.
+Dabei ist die Position der Lichtquelle gleich der Position der Kamera. Der Lichtkegel der 
+Taschenlampe entsteht durch Verdunklung von Fragmenten deren Winkel zur Lichtquelle (Kamera) größer als der Öffnungswinkel
+der Taschenlampe ist. Nach der Implementierung des Lichts entwickelte ich einige Einstellungen die sich durch
+Tastaturevents verändern lassen. Dazu gehört die Ansicht, die Farbe des Lichts, die Art des Lichts
+(Lichtwürfel oder Taschenlampen) und Änderung von OpenGL Einstellungen wie zum Beispiel Face Culling oder der Tiefentest.
+Zu letzt implementierte ich die verschiedenen Viewports.
+\section{Installation}
+\subsection{Windows}
+\subsection{Linux}
+\section{Bedienung}
+\subsection{Kamera}
+\subsection{Licht}
+\subsection{Viewports}
+\subsection{Wireframe Modien}
+\subsection{Zusammenfassung}
+\section{Dateien}
+\subsection{C++ Quelltexte und Header Files}
+\subsection{Vertexshader}
+\subsection{Fragmentshader}
+\subsection{Texturen}
+\section{Probleme}
+Globaler Shader im Konstructor segfault 
+maus cursor
+\end{document}
