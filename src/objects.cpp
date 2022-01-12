@@ -259,7 +259,7 @@ void drawInstancedOuterCones(GLuint instances)
     glBindVertexArray(VAOs[VAOCone]);
     glVertexAttrib3f(vColor, 0.0f, 0.0f, 0.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glLineWidth(1.0f);
+    glLineWidth(2.0f);
     glDrawElementsInstanced(GL_TRIANGLES,612,GL_UNSIGNED_INT,0,instances);
 }
 void setupLightCube()

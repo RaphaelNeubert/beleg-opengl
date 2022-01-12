@@ -40,3 +40,7 @@ main
 *.gz
 *.fls
 *.toc
+*.bbl
+*.bcf
+*.blg
+*.xml

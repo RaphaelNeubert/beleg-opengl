@@ -38,9 +38,9 @@ glm::vec3 Colors[4]={glm::vec3(1.0f,1.0f,1.0f),glm::vec3(1.0f,0.0f,1.0f),
 
 void init()
 {
-    sceneShader = new Shader("src/instanced_shader.vs","src/positionalLight.fs");
+    sceneShader = new Shader("src/instanced_shader.vs","src/positional_light.fs");
     sceneFLShader = new Shader("src/instanced_shader.vs","src/flashlight.fs");
-    lightCubeShader = new Shader("src/model_shader.vs","src/lightCube.fs");
+    lightCubeShader = new Shader("src/model_shader.vs","src/light_cube.fs");
 
     //set default Settings
     settings.light=POSITIONAL_CUBE;
@@ -94,7 +94,8 @@ void display()
             case 0:
                 if (settings.mViewports) continue;
                 glViewport(0.0f,0.0f,settings.winW,settings.winH);
-                projection=glm::perspective(glm::radians(45.0f),settings.winW/settings.winH,0.1f,200.0f);
+                projection=glm::perspective(glm::radians(45.0f),
+                            settings.winW/settings.winH,0.1f,200.0f);
                 break;
             case 1:
                 glViewport(0.0f,0.0f,settings.winW/2,settings.winH/2);
@@ -104,16 +105,20 @@ void display()
             case 2:
                 glViewport(settings.winW/2,0.0f,settings.winW/2,settings.winH/2);
                 projection=glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.1f,200.0f);
-                view=camera.getPositionViewMatrix(glm::vec3(0.0f,0.0f,-1.0f));
+                view=glm::lookAt(pos*glm::vec3(1.0f,0.0f,1.0f),
+                        pos*glm::vec3(1.0f,0.0f,1.0f)+glm::vec3(0.0f,0.0f,-1.0f)
+                                                    ,glm::vec3(0.0f,1.0f,0.0f));
                 break;
             case 3:
                 glViewport(0.0f,settings.winH/2,settings.winW/2,settings.winH/2);
                 projection=glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.1f,200.0f);
                 pos.y=5.0f;
-                view=glm::lookAt(pos,pos+glm::vec3(0.0f,-1.0f,0.001f),glm::vec3(0.0f,1.0f,0.0f));
+                view=glm::lookAt(pos,pos+glm::vec3(0.0f,-1.0f,0.001f),
+                                            glm::vec3(0.0f,1.0f,0.0f));
                 break;
             case 4:
-                glViewport(settings.winW/2,settings.winH/2,settings.winW/2,settings.winH/2);
+                glViewport(settings.winW/2,settings.winH/2,
+                            settings.winW/2,settings.winH/2);
                 projection=glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.1f,200.0f);
                 break;
         }
@@ -158,12 +163,14 @@ void display()
 
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels), models.cubeModels, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(models.cubeModels),
+                                            models.cubeModels, GL_STATIC_DRAW);
         if (wModeDef[settings.wMode][0]) drawInstancedCubes(10000);
         if (wModeDef[settings.wMode][1]) drawInstancedOuterCubes(10000);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels), models.coneModels, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(models.coneModels),
+                                            models.coneModels, GL_STATIC_DRAW);
         if (wModeDef[settings.wMode][2]) drawInstancedCones(400);
         if (wModeDef[settings.wMode][3]) drawInstancedOuterCones(400);
 

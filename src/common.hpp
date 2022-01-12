@@ -24,6 +24,7 @@ extern Shader *sceneFLShader;
 extern Shader *sunShader;
 extern Camera camera;
 
+//TODO no need to be extern
 extern bool firstMouseCall;
 extern GLfloat lastX;
 extern GLfloat lastY;

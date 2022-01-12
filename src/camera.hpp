@@ -22,6 +22,7 @@ class Camera
     public:
         Camera(glm::vec3 pos, glm::vec3 front);
         glm::mat4 getViewMatrix();
+        //TODO not needet anymore?
         glm::mat4 getPositionViewMatrix(glm::vec3 manualFront);
         void mouseMovement(int xoffset, int yoffset);
         void keyInput(Direction dir, float deltaTime);
