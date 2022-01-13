@@ -416,9 +416,47 @@ lizenzierte Texturen aufgelistet werden \cite{cube1}.
 Die Datei \say{cone1.jpg} ist ein hochaufgelöste Makrofotografie eines Blattes welches ich als Textur für den
 Kegel verwende. Gefunden habe ich das Bild auf der Webseite freestocktextures.com auf der
 Texturen unter \say{Creative Commons Zero} Lizenz aufgelistet werden \cite{cone1}.
-\section{Probleme}
-Globaler Shader im Konstructor segfault 
-maus cursor
+
+\section{Herausforderungen}
+Bei der Entwicklung traten einige Herausforderungen und Probleme auf.
+Einige dieser möchte ich im Folgenden weiter ausführen.
+\subsection{Optimierung}
+Durch die Entscheidung sehr viele Objekte zu zeichnen stellte sich mir die Frage in inwiefern ich das ganze
+Optimieren kann bzw. muss.
+Nach einiger Recherche entschloss ich mich dazu zwei Optimierungsmaßnahmen zu unternehmen.\par\medskip
+
+Die erste Maßnahme war das verwenden von \say{Face Culling}. Die die dafür Notwendigen Implementierungs Veränderungen waren 
+dabei sehr gering da ich bei der Implementierung der Funktionen für die Erzeugung der geometrischen Objekte bereits
+auf die Reihenfolge der Vertices geachtet hatte. Durch das verwenden von \say{Face Culling} werden nur sichtbare
+Flächen gerendert. Zum Beispiel können bei einem Würfel maximal drei Seiten gleichzeitig betrachtet werden.
+Bei 10000 Würfeln erspart man sich in dem Falle also das rendern von 60000 Quadraten also 120000 Dreiecken.
+Die resultierende Perfomance Veränderung kann durch Betrachtung der Grafikkarten Auslastung beim
+Ein- und Ausschalten von \say{Face Culling} (Taste \textit{2}) betrachtet werden.\par\medskip
+
+Die zweite und weitaus bedeutsamere Maßnahme war das verwenden von instanziiertem Zeichnen.
+Die \say{draw}-Funktionen von OpenGL haben bekanntlich einen nicht zu geringen Overhead. Ohne die Verwendung
+von instanziiertem Zeichnen sind 10400 aufrufe dieser Funktion pro Bild, bei 60 Bildern pro Sekunde 624000 Aufrufe
+pro Sekunde, notwendig. Beim verwenden von instanziiertem Zeichnen werden die Model-Matrizen alle z.B. Würfel mit
+einmal der Grafikkarte übergeben. Anschließend können alle Objekte dieses Types mit einem einzigem Aufruf einer
+\say{draw}-Funktion gezeichnet werden. Pro Bild sind also nur 2 statt 10400 und somit pro Sekunde 120 statt 624000,
+Aufrufe der \say{draw}-Funktion notwendig.
+
+\subsection{Problem}
+Beim Versuch ein Globales Objekt meiner Klasse \say{Shader} zu erzeugen, erhielt ich nach erfolgreichem Compilieren
+einen Speicherzugriffsfehler. Nachdem ich keine offensichtlichen Fehler finden konnte, entschied ich mich einen
+Debugger zu verwenden um den Fehler zu lokalisieren. Dieser zeigte mir zunächst das der Fehler in einer Nvidia
+Bibliothek, also ausserhalb meines Programmes auftrat. Durch das Betrachten des Stacktraces entdeckte ich die
+Zeile die das Problem verursachte. Es handelte sich dabei um die Zeile \say{GLuint vertex=glCreateShader(GL\_VERTEX\_SHADER);}
+die sich im Konstruktor der Klasse \say{Shader} befand. Dies verwirrte mich zunächst sehr. Das Internet war mir 
+in dem Moment auch keine große Hilfe. Nach einiger Zeit wurde mir das Problem klar. Globale Variablen werden
+initialisiert bevor die \say{main}-Funktion ausgeführt wird. Dies hatte zur folge das OpenGL Befehle vor notwendigen
+Initialisierungen ausgeführt wurden und somit den Fehler verursachten.\par\medskip
+
+Behoben habe ich den Fehler indem ich lediglich einen Pointer vom Typ der Klasse \say{Shader} Global deklariert habe
+und erst später, nach den notwendigen Initialisierungen, auf dem Heap ein Objekt dieser Klasse erzeugt und der
+globalen Variable zugewiesen habe.
+
+\subsection{Maus Cursor}
 \newpage
 \printbibliography
 \end{document}
