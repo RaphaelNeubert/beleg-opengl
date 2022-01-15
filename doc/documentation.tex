@@ -16,7 +16,8 @@
 \usepackage{cancel}
 \usepackage{dirtytalk}
 \usepackage{siunitx}
-\usepackage[style=numeric,backend=biber,sorting=none]{biblatex}
+\usepackage{listings}
+\usepackage[style=numeric,backend=biber,sorting=none,block=ragged]{biblatex}
 
 \graphicspath{ {./images/} }
 \addbibresource{references.bib}
@@ -77,7 +78,9 @@ Ansicht, die Lichtfarbe oder andere Effekte haben.\par
 \medskip
 Entwickelt habe ich mein Programm auf einem Linux Betriebssystem. Erst nach dem das Programm fertig war habe ich es
 mit Visual-Studio geöffnet und die notwendigen Veränderungen vorgenommen um es auf Windows lauffähig zu bekommen.
-Zur Versionierung verwendete ich Git und ein privates Repository auf Github.\par
+Zur Versionierung verwendete ich Git und ein privates Repository auf Github. Als Wissensressourcen verwendete ich
+die Vorlesungsfolien, den YouTube-Kanal \say{Brian Will} \cite{BrianWill} und die Website \say{learnopengl}
+\cite{learnopengl}.\par
 \medskip
 Am Anfang der Entwicklung entschloss ich mich keine meiner bisher in den Praktika verwendeten Funktionen zu verwenden
 sondern von Null anzufangen. Deshalb entwickelte ich zunächst eine Klasse \say{Shader} welche mir eine einfache
@@ -111,7 +114,33 @@ Tastaturevents verändern lassen. Dazu gehört die Ansicht, die Farbe des Lichts
 Zu letzt implementierte ich die verschiedenen Viewports.
 \section{Installation}
 \subsection{Windows}
+Um das Programm zu installieren müssen zunächst die benötigten Bibliotheken glm, glew, freeglut und freeimage
+heruntergeladen werden. Danach kann die Projektmappe in Visual-Studio geöffnet werden. Als erstes sollte sichergestellt
+werden das die Projektmappenkonfiguration auf \say{Release} und die Projektmappenplattform auf \say{x64} gestellt ist.
+Anschließend müssen die Pfade zu den Include-Dateien der Bibliotheken in Visual-Studio in 
+den Projekteinstellungen unter \say{C/C++} im Punkt \say{Allgemein} bei \say{Zusätzliche Includeverzeichnisse}
+Eingetragen werden. Danach müssen noch unter \say{Linker} im Punkt \say{Allgemein} bei 
+\say{Zusätzliche Bibliotheksverzeichnisse} die Pfade der heruntergeladenen Bibliotheken angegeben werden
+und im Punkt \say{Eingabe} bei \say{Zusätzliche Abhängigkeiten} die Optionen \say{freeglut.lib;glew32.lib;FreeImage.lib}
+eingetragen werden. Jetzt kann das Projekt Compiliert werden. Damit die resultierende exe-Datei sich ausführen lässt,
+müssen die Bibliotheken im Pfad liegen, was entweder durch Pfad-Variablen oder durch das ablegen der dll's  der Bibliotheken
+im gleichen Ordner wie die exe-Datei selber, realisiert werden kann.
 \subsection{Linux}
+Bei meiner Abgabe der Belegarbeit handelt es sich lediglich um eine Windows Version. Die Linux Version befindet sich in einem
+privaten Git-Repository zu welchem ich auf Anfrage Zugriff geben kann.
+\subsubsection{Installation der Abhängigkeiten}
+Die benötigten Programme und Bibliotheken können mithilfe des Packagemanagers installiert werden.
+Bei Verwendung des Packagemanagers \say{APT} lauten der Befehl wie folgt.
+\lstset{language=bash}
+\begin{lstlisting}
+sudo apt install git g++ libglm-dev libglew-dev freeglut3-dev libfreeimage-dev
+\end{lstlisting}
+\subsubsection{Installation des Programmes}
+\begin{lstlisting}
+git clone https://github.com/RaphaelNeubert/beleg-opengl
+cd beleg-opengl
+make
+\end{lstlisting}
 \newpage
 \section{Bedienung}
 \subsection{Kamera}
@@ -456,7 +485,25 @@ Behoben habe ich den Fehler indem ich lediglich einen Pointer vom Typ der Klasse
 und erst später, nach den notwendigen Initialisierungen, auf dem Heap ein Objekt dieser Klasse erzeugt und der
 globalen Variable zugewiesen habe.
 
-\subsection{Maus Cursor}
+\subsection{Problem}
+Um eine realistische Kamera zu entwickeln, wollte ich das \say{Umher sehen} per Mausbewegung, ähnlich wie
+in einem Computerspiel ermöglichen. Ich merkte schnell das dies nur möglich war indem ich die Kamerarichtung
+durch relative Mausbewegung (Offset) verändere. Leider musste ich feststellen das die Bibliothek \say{Glut}
+keine Möglichkeit bietet, relative Mausbewegung direkt zu erhalten. Ich schrieb also selber eine Funktion die aus den
+absoluten Mausdaten, relative Offset-Werte ermittelt. Dennoch gab es ein Problem. Zum Beispiel fünffache
+Rechtsdrehungen waren unmöglich da irgendwann die Maus das Fenster verließ.\par\medskip
+
+Behoben habe ich das Problem, indem ich sobald sich der Mauszeiger einem Rand des Fensters nähert, er durch die Funktion
+\say{glutWarpPointer(x,y)} wieder in die Mitte des Fensters gesetzt wird. Damit dies auch bei variierender Fenstergröße
+zuverlässig funktioniert, verwende ich relative Grenzen die diese Versetzung des Zeigers auslösen. Sei $X_m$ die 
+x-Koordinate des Mauszeigers, $Y_m$ dessen y-Koordinate,  $w$ die Weite des Fensters und  $h$ dessen Höhe, dann wird
+die Versetzung des Mauszeigers ausgelöst falls $X_m < \frac{w}{10} \,\lor\, X_m > w-\frac{w}{10}$ bzw. falls
+$Y_m < \frac{h}{10} \,\lor\, Y_m > h-\frac{h}{10}$. Dabei werden lediglich Werte verändert die eine Versetzung
+des Zeigers auslösen. Falls zum Beispiel nur $X_m$ einen Wert außerhalb des Rahmens besitzt, wird auch nur der
+ x-Wert des Zeigers verändert und auf $\frac{w}{2}$ gesetzt.
+
+
+
 \newpage
 \printbibliography
 \end{document}
