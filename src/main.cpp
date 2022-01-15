@@ -24,9 +24,6 @@ Shader *lightCubeShader;
 Camera camera(glm::vec3(0.0f,3.0f,3.0f),glm::vec3(0.0f,0.0f,-1.0f));
 Settings settings;
 
-GLfloat lastX=WIN_W/2.0;
-GLfloat lastY=WIN_H/2.0;
-bool firstMouseCall=true; 
 
 GLfloat deltaTime=0.0f;
 GLfloat lastFrame=0.0f;

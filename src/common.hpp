@@ -19,18 +19,9 @@ extern GLuint VBOs[NumVBOs];
 extern GLuint Textures[NumTextures];
 extern GLuint EBOs[NumEBOs];
 
-extern Shader *sceneShader;
-extern Shader *sceneFLShader;
-extern Shader *sunShader;
 extern Camera camera;
 
-//TODO no need to be extern
-extern bool firstMouseCall;
-extern GLfloat lastX;
-extern GLfloat lastY;
-
 extern GLfloat deltaTime;
-extern GLfloat lastFrame;
 
 //settings
 enum lightType {POSITIONAL_CUBE, FLASHLIGHT, NumLightTypes};

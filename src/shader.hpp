@@ -11,17 +11,17 @@
 
 class Shader
 {
-    public:
+    private:
         unsigned int id;
 
+        void checkCompileErrors(unsigned int shader, const char* type);
+        void checkLinkErrors(unsigned int program);
+    public:
         Shader(const char* pathVertexShader, const char* pathFragmentShader);
         void activate();
         void uniformMat4(const std::string& name, const glm::mat4& value);
         void uniformVec3(const std::string& name, const glm::vec3& value);
         void uniformFloat(const std::string& name, const GLfloat value);
-    private:
-        void checkCompileErrors(unsigned int shader, const char* type);
-        void checkLinkErrors(unsigned int program);
 
 };
 #endif

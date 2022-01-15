@@ -5,8 +5,6 @@
 
 static glm::vec3 calculateNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c)
 {
-    //glm::vec3 x(c[0]-a[0],c[1]-a[1],c[2]-a[2]);
-    //glm::vec3 y(b[0]-a[0],b[1]-a[1],b[2]-a[2]);
     return glm::normalize(glm::cross(b-a,c-a));
 }
 void generateCube()
@@ -78,19 +76,23 @@ void generateCube()
                 glm::vec3(vertices[i+6],vertices[i+7],vertices[i+8]),
                 glm::vec3(vertices[i+3],vertices[i+4],vertices[i+5]));
         normals[i+9]=num.x; normals[i+10]=num.y; normals[i+11]=num.z;
-        //std::cout<<"x="<<num.x<<" y="<<num.y<<" z="<<num.z<<std::endl;
     }
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCube]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
     glBindVertexArray(VAOs[VAOCube]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCube]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),
+                                                        vertices,GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
-    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),sizeof(normals),normals);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),
+                                                        sizeof(normals),normals);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
-    glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
-    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,(void*)(sizeof(vertices)+sizeof(texcoords)));
+    glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,
+                                                        (void*)sizeof(vertices));
+    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,
+                                    (void*)(sizeof(vertices)+sizeof(texcoords)));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vTexture);
     glEnableVertexAttribArray(vNormal);
@@ -98,13 +100,17 @@ void generateCube()
     //instanced rendering
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOCubeInstance]);
     glEnableVertexAttribArray(vInstance1);
-    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                                    (void*)0);
     glEnableVertexAttribArray(vInstance2);
-    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                    (void*)(sizeof(glm::vec4)));
     glEnableVertexAttribArray(vInstance3);
-    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                    (void*)(2*sizeof(glm::vec4)));
     glEnableVertexAttribArray(vInstance4);
-    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                    (void*)(3*sizeof(glm::vec4)));
 
     glVertexAttribDivisor(vInstance1, 1);
     glVertexAttribDivisor(vInstance2, 1);
@@ -200,25 +206,21 @@ void generateCone()
             glm::vec3(vertices[0],vertices[1],vertices[2]));
     normals[101*3]=num.x; normals[101*3+1]=num.y; normals[101*3+2]=num.z;
     normals[n*3+101*3]=0.0f; normals[n*3+101*3+1]=-1.0f; normals[n*3+101*3+2]=0.0f;
-    /*
-    for (int i=0; i<3*n*2; i+=3) {
-        std::cout<<"i="<<i<<" val="<<normals[i]<<"   ";
-        std::cout<<"i="<<i+1<<" val="<<normals[i+1]<<"   ";
-        std::cout<<"i="<<i+2<<" val="<<normals[i+2]<<"   "<<std::endl;
-    }
-    */
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[EBOCone]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glBindVertexArray(VAOs[VAOCone]);
     glBindBuffer(GL_ARRAY_BUFFER,VBOs[VBOCone]);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords)+sizeof(normals),
+                                                        vertices,GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices),sizeof(texcoords),texcoords);
-    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),sizeof(normals),normals);
+    glBufferSubData(GL_ARRAY_BUFFER,sizeof(vertices)+sizeof(texcoords),
+                                                        sizeof(normals),normals);
     glVertexAttribPointer(vPosition,3,GL_FLOAT,GL_FALSE,0,(void*)0);
     glVertexAttribPointer(vTexture,2,GL_FLOAT,GL_FALSE,0,(void*)sizeof(vertices));
-    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,(void*)(sizeof(vertices)+sizeof(texcoords)));
+    glVertexAttribPointer(vNormal,3,GL_FLOAT,GL_FALSE,0,
+                                    (void*)(sizeof(vertices)+sizeof(texcoords)));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vTexture);
     glEnableVertexAttribArray(vNormal);
@@ -226,13 +228,17 @@ void generateCone()
     //instanced rendering
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOConeInstance]);
     glEnableVertexAttribArray(vInstance1);
-    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+    glVertexAttribPointer(vInstance1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                                    (void*)0);
     glEnableVertexAttribArray(vInstance2);
-    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                    (void*)(sizeof(glm::vec4)));
     glEnableVertexAttribArray(vInstance3);
-    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                (void*)(2*sizeof(glm::vec4)));
     glEnableVertexAttribArray(vInstance4);
-    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+    glVertexAttribPointer(vInstance4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                                (void*)(3*sizeof(glm::vec4)));
 
     glVertexAttribDivisor(vInstance1, 1);
     glVertexAttribDivisor(vInstance2, 1);
@@ -291,14 +297,14 @@ SurfaceModels& generateSurfaceModels(SurfaceModels& models,GLfloat currentFrame)
             //cube
             models.cubeModels[i*rows+j]=glm::translate(glm::mat4(1.0f),
                                 glm::vec3(j-rows/2,sin(currentFrame/1000)*
-                                                    sin(i+1)*cos(j+1),i-rows/2));
+                                                sin(i+1)*cos(j+1),i-rows/2));
             //cone
             if (i%5 == 0) {
                 if (j%5 == 0) {
                 //place cone
                 models.coneModels[pc]=glm::translate(glm::mat4(1.0f),
-                                        glm::vec3(j-rows/2,sin(currentFrame/1000)*
-                                                        sin(i+1)*cos(j+1)+1,i-rows/2));
+                                      glm::vec3(j-rows/2,sin(currentFrame/1000)*
+                                      sin(i+1)*cos(j+1)+1,i-rows/2));
                 pc++;
                 }
             }

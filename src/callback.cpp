@@ -3,6 +3,9 @@
 #include "common.hpp"
 #include <glut.h>
 
+GLfloat lastX=WIN_W/2.0;
+GLfloat lastY=WIN_H/2.0;
+bool firstMouseCall=true; 
 
 void reshape(int w, int h)
 {
