@@ -10,6 +10,7 @@ SRC = $(wildcard $(SDIR)/*.cpp)
 OBJ = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
+	@mkdir -p $(@D)
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(LDFLAGS)
 
 main: $(OBJ)
